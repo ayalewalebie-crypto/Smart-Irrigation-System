@@ -1,0 +1,38 @@
+# ── Dependencies ──────────────────────────────────────────
+node_modules/
+.pnp
+.pnp.js
+
+# ── Environment / secrets — NEVER commit these ────────────
+.env
+.env.*
+!.env.example
+backend/.env
+frontend/.env
+
+# ── Build output ──────────────────────────────────────────
+dist/
+dist-ssr/
+build/
+
+# ── Logs ──────────────────────────────────────────────────
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# ── OS files ──────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── Editor ────────────────────────────────────────────────
+.vscode/*
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+
+# ── Misc ──────────────────────────────────────────────────
+*.local
+*.suo
+*.sln

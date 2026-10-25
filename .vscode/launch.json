@@ -1,0 +1,42 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "Launch Frontend (Chrome)",
+      "url": "http://localhost:5173",
+      "webRoot": "${workspaceFolder}/frontend/src",
+      "sourceMapPathOverrides": {
+        "webpack:///./src/*": "${webRoot}/*"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch Backend (Node)",
+      "program": "${workspaceFolder}/backend/server.js",
+      "cwd": "${workspaceFolder}/backend",
+      "envFile": "${workspaceFolder}/backend/.env",
+      "console": "integratedTerminal",
+      "restart": true
+    },
+    {
+      "name": "Launch Full Stack",
+      "configurations": ["Launch Frontend (Chrome)", "Launch Backend (Node)"],
+      "presentation": {
+        "hidden": false,
+        "group": "",
+        "order": 1
+      },
+      "stopAll": true
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Full Stack (Frontend + Backend)",
+      "configurations": ["Launch Frontend (Chrome)", "Launch Backend (Node)"],
+      "stopAll": true
+    }
+  ]
+}

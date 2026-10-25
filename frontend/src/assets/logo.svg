@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <!-- Circular background -->
+  <circle cx="60" cy="60" r="58" fill="#14532d" stroke="#86efac" stroke-width="2.5"/>
+
+  <!-- Water drop (main shape) -->
+  <path d="M60 22 C60 22 36 50 36 67 C36 80.3 46.7 91 60 91 C73.3 91 84 80.3 84 67 C84 50 60 22 60 22Z"
+        fill="#22c55e" opacity="0.9"/>
+
+  <!-- Inner water highlight -->
+  <path d="M60 32 C60 32 44 54 44 67 C44 76 51.2 83 60 83 C68.8 83 76 76 76 67 C76 54 60 32 60 32Z"
+        fill="#86efac" opacity="0.5"/>
+
+  <!-- Leaf / plant growing through drop -->
+  <path d="M60 58 C60 58 60 42 60 42" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+  <path d="M60 52 C56 46 50 44 46 46 C48 52 53 56 60 56"
+        fill="#fff" opacity="0.9"/>
+  <path d="M60 48 C64 42 70 40 74 42 C72 48 67 52 60 52"
+        fill="#86efac" opacity="0.95"/>
+
+  <!-- WiFi / signal arcs (IoT / ESP8266 reference) -->
+  <path d="M48 73 Q60 63 72 73" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" opacity="0.7"/>
+  <path d="M53 78 Q60 72 67 78" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" opacity="0.8"/>
+  <circle cx="60" cy="82" r="2.5" fill="#fff" opacity="0.9"/>
+
+  <!-- Bottom text arc area — small tagline dots -->
+  <circle cx="44" cy="98" r="1.8" fill="#86efac" opacity="0.6"/>
+  <circle cx="60" cy="102" r="1.8" fill="#86efac" opacity="0.8"/>
+  <circle cx="76" cy="98" r="1.8" fill="#86efac" opacity="0.6"/>
+</svg>
