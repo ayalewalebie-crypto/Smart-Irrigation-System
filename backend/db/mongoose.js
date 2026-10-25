@@ -1,10 +1,14 @@
 const mongoose = require('mongoose');
-require('dotenv').config({ path: require('path').resolve(__dirname, '..', '.env') });
+
+// Only load .env file in development — on Render/production env vars are injected by the platform
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config({ path: require('path').resolve(__dirname, '..', '.env') });
+}
 
 async function connectDB() {
   const MONGODB_URI = process.env.MONGODB_URI;
   if (!MONGODB_URI) {
-    console.error('  ❌ MONGODB_URI is not set in backend/.env');
+    console.error('  ❌ MONGODB_URI is not set. Add it to your environment variables.');
     process.exit(1);
   }
 

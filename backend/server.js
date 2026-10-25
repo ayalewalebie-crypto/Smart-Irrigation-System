@@ -4,7 +4,7 @@
  * Version: 2.0.0 — Ethiopian Agricultural Organisation Edition
  */
 
-require('dotenv').config({ path: require('path').resolve(__dirname, '.env') });
+require('dotenv').config({ path: require('path').resolve(__dirname, '.env'), override: false });
 const express       = require('express');
 const cors          = require('cors');
 const helmet        = require('helmet');
