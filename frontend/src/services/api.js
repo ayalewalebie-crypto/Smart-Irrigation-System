@@ -33,11 +33,7 @@ async function request(path, options = {}) {
     clearTimeout(timeoutId);
     if (err.name === 'AbortError')
       throw new Error('Request timed out. Please check your connection and try again.');
-    throw new Error(
-      'Cannot connect to the server. Make sure:\n' +
-      '1. Backend is running:  cd backend && npm run dev\n' +
-      '2. MongoDB is running on port 27017'
-    );
+    throw new Error('Server offline or unreachable. Please try again later.');
   } finally {
     clearTimeout(timeoutId);
   }

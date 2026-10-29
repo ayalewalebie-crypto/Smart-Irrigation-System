@@ -18,7 +18,7 @@ const socketService = require('./utils/socketService');
 
 const app    = express();
 const server = http.createServer(app);
-const PORT   = process.env.PORT || 5000;
+const PORT   = process.env.PORT || 10000;
 
 // ── Trust Render/Vercel reverse proxy (required for rate limiting on Render) ──
 app.set('trust proxy', 1);
@@ -167,7 +167,7 @@ async function startServer() {
     // Initialise Socket.IO on the http server
     socketService.init(server, ALLOWED_ORIGINS);
 
-    server.listen(PORT, () => {
+    server.listen(PORT, '0.0.0.0', () => {
       const duration = ((Date.now() - startTime) / 1000).toFixed(2);
 
       console.log('Server Configuration:');

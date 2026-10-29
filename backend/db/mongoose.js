@@ -21,7 +21,7 @@ async function connectDB() {
     retryWrites:              true,
     w:                        'majority',
     tls:                      true,
-    tlsAllowInvalidCertificates: process.env.NODE_ENV !== 'production', // allow on dev (Windows CA issue)
+    tlsAllowInvalidCertificates: true, // needed on both Windows dev and Render (Node TLS CA issue)
   };
 
   try {
