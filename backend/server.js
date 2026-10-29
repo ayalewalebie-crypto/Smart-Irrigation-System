@@ -80,6 +80,15 @@ app.use((req, _res, next) => {
   next();
 });
 
+// ── Graceful /api/ fallback rewrite ───────────────────────────────────────────
+// Supports requests sent with or without /api prefix (e.g. /auth/register -> /api/auth/register)
+app.use((req, _res, next) => {
+  if (!req.url.startsWith('/api') && !req.url.startsWith('/socket.io')) {
+    req.url = `/api${req.url}`;
+  }
+  next();
+});
+
 // ── Health check ──────────────────────────────────────────────────────────────
 app.get('/api/health', (_req, res) => {
   const mongoose = require('mongoose');
@@ -198,6 +207,20 @@ async function startServer() {
 
       console.log('  [Socket.IO]    : ws://localhost:' + PORT + '  (real-time sensor events)');
       console.log('');
+
+      // Keep-alive self-ping for Render free tier (prevents idle spin-down after 15m)
+      if (process.env.NODE_ENV === 'production' || process.env.RENDER) {
+        const pingUrl = process.env.RENDER_EXTERNAL_URL || 'https://smart-irrigation-system-fkua.onrender.com';
+        const https = require('https');
+        setInterval(() => {
+          https.get(`${pingUrl}/api/health`, (res) => {
+            res.resume();
+          }).on('error', () => {});
+        }, 14 * 60 * 1000);
+        console.log(`  [KeepAlive]    : Active — pinging ${pingUrl}/api/health every 14m`);
+        console.log('');
+      }
+
       console.log('========================================');
       console.log(`Server ready and accepting requests (${duration}s)`);
       console.log('========================================\n');

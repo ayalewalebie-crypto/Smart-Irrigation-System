@@ -1,4 +1,22 @@
-export const BASE_URL = import.meta.env.VITE_API_URL || 'https://smart-irrigation-system-fkua.onrender.com/api';
+function resolveBaseUrl() {
+  const envUrl = (import.meta.env.VITE_API_URL || '').trim();
+  if (!envUrl) {
+    return 'https://smart-irrigation-system-fkua.onrender.com/api';
+  }
+  const clean = envUrl.replace(/\/+$/, '');
+  return clean.endsWith('/api') ? clean : `${clean}/api`;
+}
+
+export const BASE_URL = resolveBaseUrl();
+
+export function pingServer() {
+  try {
+    fetch(`${BASE_URL}/health`, { method: 'GET', cache: 'no-store' }).catch(() => {});
+  } catch (_) {}
+}
+if (typeof window !== 'undefined') {
+  pingServer();
+}
 
 function sanitizeValue(v) {
   if (typeof v === 'string') return v.replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -11,7 +29,8 @@ function sanitizeObj(obj) {
   return Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, sanitizeValue(v)]));
 }
 
-const REQUEST_TIMEOUT_MS = 20_000;
+// 65 seconds timeout accommodates Render free-tier cold starts (which take 30-50s)
+const REQUEST_TIMEOUT_MS = 65_000;
 
 async function request(path, options = {}) {
   const token      = localStorage.getItem('sis_token');
@@ -32,7 +51,7 @@ async function request(path, options = {}) {
   } catch (err) {
     clearTimeout(timeoutId);
     if (err.name === 'AbortError')
-      throw new Error('Request timed out. Please check your connection and try again.');
+      throw new Error('Request timed out. The server was waking up from sleep — please try again in a moment.');
     throw new Error('Server offline or unreachable. Please try again later.');
   } finally {
     clearTimeout(timeoutId);

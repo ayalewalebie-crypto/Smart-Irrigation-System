@@ -26,10 +26,9 @@
  */
 
 import { io } from 'socket.io-client';
+import { BASE_URL } from './api';
 
-const SOCKET_URL = import.meta.env.VITE_API_URL
-  ? import.meta.env.VITE_API_URL.replace('/api', '')
-  : 'http://localhost:8000';
+const SOCKET_URL = (import.meta.env.VITE_API_URL || BASE_URL || '').replace(/\/api\/?$/, '') || 'http://localhost:8000';
 
 let socket = null;
 

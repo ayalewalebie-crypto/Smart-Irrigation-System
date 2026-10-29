@@ -3,10 +3,11 @@
  *  Desktop: hero branding panel (left) + form panel (right)
  *  Mobile:  single card with logo + form
  */
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLang } from '../context/LanguageContext';
+import { BASE_URL } from '../services/api';
 import logoImg from '../assets/logo.jpg';
 import bgImg   from '../assets/bg.jpg';
 
@@ -17,11 +18,28 @@ export default function LoginPage() {
   const { t, lang, switchLang } = useLang();
   const navigate = useNavigate();
 
-  const [email,    setEmail]    = useState('');
-  const [password, setPassword] = useState('');
-  const [showPw,   setShowPw]   = useState(false);
-  const [error,    setError]    = useState('');
-  const [touched,  setTouched]  = useState({ email: false, password: false });
+  const [email,       setEmail]       = useState('');
+  const [password,    setPassword]    = useState('');
+  const [showPw,      setShowPw]      = useState(false);
+  const [error,       setError]       = useState('');
+  const [touched,     setTouched]     = useState({ email: false, password: false });
+  const [wakeMessage, setWakeMessage] = useState(false);
+
+  // Pre-warm backend when login page opens so Render begins booting immediately
+  useEffect(() => {
+    fetch(`${BASE_URL}/health`).catch(() => {});
+  }, []);
+
+  // If signing in takes more than 4 seconds, show reassurance that server is waking up
+  useEffect(() => {
+    let timer;
+    if (authLoading) {
+      timer = setTimeout(() => setWakeMessage(true), 4000);
+    } else {
+      setWakeMessage(false);
+    }
+    return () => clearTimeout(timer);
+  }, [authLoading]);
 
   const touch = (f) => setTouched(p => ({ ...p, [f]: true }));
 
@@ -52,8 +70,8 @@ export default function LoginPage() {
           ? 'Your account has been suspended. Contact the Farm Owner.' :
         result.code === 'ACCOUNT_DEACTIVATED'
           ? 'Your account is deactivated. Contact the Farm Owner.' :
-        msg.includes('Cannot connect') || msg.includes('fetch')
-          ? 'Server offline. Run: cd backend && npm run dev'
+        msg.includes('Cannot connect') || msg.includes('fetch') || msg.includes('offline') || msg.includes('unreachable')
+          ? (lang === 'am' ? 'ሰርቨሩ ሊደረስበት አልቻለም። እባክዎ ጥቂት ቆይተው እንደገና ይሞክሩ።' : 'Cannot connect to server. The server may still be waking up — please wait a moment and try again.')
           : msg
       );
     }
@@ -180,6 +198,27 @@ export default function LoginPage() {
                 : <><i className="fi fi-rr-sign-in-alt" />{lang === 'am' ? 'ወደ ስርዓቱ ይግቡ' : 'Sign In'}</>
               }
             </button>
+            {authLoading && wakeMessage && (
+              <div style={{
+                fontSize: '0.78rem',
+                color: '#15803d',
+                background: '#f0fdf4',
+                border: '1px solid #bbf7d0',
+                borderRadius: 8,
+                padding: '8px 12px',
+                marginTop: '0.75rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+              }}>
+                <i className="fi fi-rr-cloud" style={{ fontSize: '0.9rem', flexShrink: 0 }} />
+                <span>
+                  {lang === 'am'
+                    ? 'ሰርቨሩ በመነሳት ላይ ነው፣ እባክዎ ጥቂት ሰከንዶች ይጠብቁ…'
+                    : 'Server is waking up from idle mode, please wait a moment…'}
+                </span>
+              </div>
+            )}
           </form>
 
           <p className="auth-footer" style={{ marginTop: '1.4rem' }}>

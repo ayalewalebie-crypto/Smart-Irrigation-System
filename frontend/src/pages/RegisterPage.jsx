@@ -9,10 +9,11 @@
  *   - "Already have an account? Sign in" footer
  *   - Bottom footer strip: Secure · Reliable · Smart Farming
  */
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLang } from '../context/LanguageContext';
+import { BASE_URL } from '../services/api';
 import logoImg from '../assets/logo.jpg';
 
 const NAME_REGEX  = /^[a-zA-Z\u1200-\u137F\s'\-]+$/;
@@ -58,6 +59,23 @@ export default function RegisterPage() {
   const [success,     setSuccess]     = useState('');
   const [pending,     setPending]     = useState(false);
   const [loading,     setLoading]     = useState(false);
+  const [wakeMessage, setWakeMessage] = useState(false);
+
+  // Pre-warm backend when registration page opens
+  useEffect(() => {
+    fetch(`${BASE_URL}/health`).catch(() => {});
+  }, []);
+
+  // Reassurance note if registration takes longer than 4s due to Render cold start
+  useEffect(() => {
+    let timer;
+    if (loading) {
+      timer = setTimeout(() => setWakeMessage(true), 4000);
+    } else {
+      setWakeMessage(false);
+    }
+    return () => clearTimeout(timer);
+  }, [loading]);
 
   const touch    = (f) => setTouched(p => ({ ...p, [f]: true }));
   const touchAll = () => setTouched({
@@ -137,8 +155,10 @@ export default function RegisterPage() {
     } else {
       const msg = result.message || 'Registration failed.';
       setError(
-        msg.includes('Cannot connect') || msg.includes('fetch')
-          ? '⚠️ Server offline. Run: cd backend && npm run dev'
+        msg === 'Endpoint not found.'
+          ? (lang === 'am' ? 'የሰርቨር ችግር አጋጥሟል። እባክዎ ጥቂት ቆይተው እንደገና ይሞክሩ።' : 'Cannot reach registration endpoint. The server may still be updating — please wait a moment and try again.') :
+        msg.includes('Cannot connect') || msg.includes('fetch') || msg.includes('offline') || msg.includes('unreachable')
+          ? (lang === 'am' ? 'ሰርቨሩ ሊደረስበት አልቻለም። እባክዎ ጥቂት ቆይተው እንደገና ይሞክሩ።' : 'Cannot connect to server. The server may be waking up — please wait a moment and try again.')
           : msg
       );
     }
@@ -533,6 +553,27 @@ export default function RegisterPage() {
               : <><i className="fi fi-rr-user-add" />{lang === 'am' ? 'አካውንት ፍጠር' : 'Create Account'}</>
             }
           </button>
+          {loading && wakeMessage && (
+            <div style={{
+              fontSize: '0.78rem',
+              color: '#15803d',
+              background: '#f0fdf4',
+              border: '1px solid #bbf7d0',
+              borderRadius: 8,
+              padding: '8px 12px',
+              marginTop: '0.75rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+            }}>
+              <i className="fi fi-rr-cloud" style={{ fontSize: '0.9rem', flexShrink: 0 }} />
+              <span>
+                {lang === 'am'
+                  ? 'ሰርቨሩ በመነሳት ላይ ነው፣ እባክዎ ጥቂት ሰከንዶች ይጠብቁ…'
+                  : 'Server is waking up from idle mode, please wait a moment…'}
+              </span>
+            </div>
+          )}
         </form>
 
         {/* ── Sign in link ── */}
